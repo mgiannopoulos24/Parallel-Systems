@@ -1,15 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include "my_rand.h"
-#include "timer.h"
+#include <time.h>
 
 long long total_points;
 long long points_in_circle = 0;
 int thread_count;
 pthread_mutex_t mutex;
 
-void* MonteCarloPi(void* rank);
+void* MonteCarloPiParallel(void* rank);
+double MonteCarloPiSequential(long long total_points);
+
+// Timer function using <time.h>
+double GetTime() {
+    struct timespec time;
+    clock_gettime(CLOCK_MONOTONIC, &time);
+    return time.tv_sec + time.tv_nsec * 1e-9;
+}
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
@@ -20,39 +27,49 @@ int main(int argc, char* argv[]) {
     thread_count = strtol(argv[1], NULL, 10);
     total_points = strtoll(argv[2], NULL, 10);
 
+    if (thread_count <= 0 || total_points <= 0) {
+        fprintf(stderr, "Error: Number of threads and points must be positive integers.\n");
+        exit(1);
+    }
+
+    // Sequential Monte Carlo Simulation
+    double start = GetTime();
+    double pi_sequential = MonteCarloPiSequential(total_points);
+    double finish = GetTime();
+    printf("Sequential π estimate: %f\n", pi_sequential);
+    printf("Sequential time: %f seconds\n", finish - start);
+
+    // Parallel Monte Carlo Simulation
     pthread_t* thread_handles = malloc(thread_count * sizeof(pthread_t));
     pthread_mutex_init(&mutex, NULL);
 
-    double start, finish;
-    GET_TIME(start);
-
+    start = GetTime();
     for (long thread = 0; thread < thread_count; thread++) {
-        pthread_create(&thread_handles[thread], NULL, MonteCarloPi, (void*)thread);
+        pthread_create(&thread_handles[thread], NULL, MonteCarloPiParallel, (void*)thread);
     }
 
     for (long thread = 0; thread < thread_count; thread++) {
         pthread_join(thread_handles[thread], NULL);
     }
+    finish = GetTime();
 
-    GET_TIME(finish);
-
-    double pi_estimate = 4 * ((double)points_in_circle / (double)total_points);
-    printf("Estimated value of \u03c0: %f\n", pi_estimate);
-    printf("Elapsed time: %e seconds\n", finish - start);
+    double pi_parallel = 4 * ((double)points_in_circle / (double)total_points);
+    printf("Parallel π estimate: %f\n", pi_parallel);
+    printf("Parallel time: %f seconds\n", finish - start);
 
     pthread_mutex_destroy(&mutex);
     free(thread_handles);
     return 0;
 }
 
-void* MonteCarloPi(void* rank) {
+void* MonteCarloPiParallel(void* rank) {
     unsigned seed = (unsigned)time(NULL) + (unsigned)(size_t)rank;
     long long points_per_thread = total_points / thread_count;
     long long local_points_in_circle = 0;
 
     for (long long i = 0; i < points_per_thread; i++) {
-        double x = my_drand(&seed) * 2.0 - 1.0;
-        double y = my_drand(&seed) * 2.0 - 1.0;
+        double x = (double)rand_r(&seed) / RAND_MAX * 2.0 - 1.0;
+        double y = (double)rand_r(&seed) / RAND_MAX * 2.0 - 1.0;
         if ((x * x + y * y) <= 1.0) {
             local_points_in_circle++;
         }
@@ -63,4 +80,16 @@ void* MonteCarloPi(void* rank) {
     pthread_mutex_unlock(&mutex);
 
     return NULL;
+}
+
+double MonteCarloPiSequential(long long total_points) {
+    long long points_in_circle = 0;
+    for (long long i = 0; i < total_points; i++) {
+        double x = (double)rand() / RAND_MAX * 2.0 - 1.0;
+        double y = (double)rand() / RAND_MAX * 2.0 - 1.0;
+        if ((x * x + y * y) <= 1.0) {
+            points_in_circle++;
+        }
+    }
+    return 4 * ((double)points_in_circle / total_points);
 }
