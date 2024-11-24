@@ -42,6 +42,6 @@ for threads in "${THREAD_COUNTS[@]}"; do
         # Save the data to the CSV file
         echo "$threads,$points,$avg_seq_time,$avg_par_time,$pi_value" >> $OUTPUT_CSV
     done
-	echo "Tests completed. Results saved to $OUTPUT_CSV."
     echo
 done
+echo "Tests completed. Results saved to $OUTPUT_CSV."
