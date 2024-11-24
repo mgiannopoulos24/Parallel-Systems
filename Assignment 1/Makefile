@@ -20,6 +20,7 @@ MONTE_CARLO_TARGET = $(BUILD_DIR)/monte_carlo
 INCREASE_ATOMIC_TARGET = $(BUILD_DIR)/increase_atomic
 INCREASE_TARGET = $(BUILD_DIR)/increase
 ARRAY_SUM_TARGET = $(BUILD_DIR)/array_sum
+RW_LOCK_TARGET = $(BUILD_DIR)/rw_lock
 
 # Source and object files
 MONTE_CARLO_SRCS = $(SUBDIR_1_1)/monte_carlo_pi.c $(USEFUL_CODE_DIR)/my_rand.c
@@ -34,11 +35,14 @@ INCREASE_OBJS = $(addprefix $(OBJ_DIR)/, $(notdir $(INCREASE_SRCS:.c=.o)))
 ARRAY_SUM_SRCS = $(SUBDIR_1_3)/array_sum.c
 ARRAY_SUM_OBJS = $(addprefix $(OBJ_DIR)/, $(notdir $(ARRAY_SUM_SRCS:.c=.o)))
 
+RW_LOCK_SRCS = $(SUBDIR_1_4)/rw_lock.c
+RW_LOCK_OBJS = $(addprefix $(OBJ_DIR)/, $(notdir $(RW_LOCK_SRCS:.c=.o)))
+
 # Include directories
 INCLUDES = -I$(INCLUDE_DIR)
 
 # Default rule
-all: monte_carlo increase_atomic increase array_sum
+all: monte_carlo increase_atomic increase array_sum rw_lock
 
 # Rule to build only monte_carlo
 monte_carlo: $(MONTE_CARLO_TARGET)
@@ -51,6 +55,9 @@ increase: $(INCREASE_TARGET)
 
 # Rule to build only array_sum
 array_sum: $(ARRAY_SUM_TARGET)
+
+# Rule to build only rw_lock
+rw_lock: $(RW_LOCK_TARGET)
 
 # Rule to build the monte_carlo executable
 $(MONTE_CARLO_TARGET): $(MONTE_CARLO_OBJS)
@@ -72,6 +79,11 @@ $(ARRAY_SUM_TARGET): $(ARRAY_SUM_OBJS)
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
+# Rule to build the rw_lock executable
+$(RW_LOCK_TARGET): $(RW_LOCK_OBJS)
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
+
 # Rule to compile .c files into .o files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/*/%.c
 	mkdir -p $(OBJ_DIR)
@@ -85,4 +97,4 @@ $(OBJ_DIR):
 clean:
 	rm -f $(OBJ_DIR)/*.o $(BUILD_DIR)/*
 
-.PHONY: all clean monte_carlo increase_atomic increase array_sum
+.PHONY: all clean monte_carlo increase_atomic increase array_sum rw_lock
