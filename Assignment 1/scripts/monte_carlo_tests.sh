@@ -15,6 +15,7 @@ echo "Threads,Throws,Sequential Time (s),Parallel Time (s),Pi" > $OUTPUT_CSV
 for threads in "${THREAD_COUNTS[@]}"; do
     echo "Testing with $threads threads"
     printf "%-15s %-25s %-25s %-15s\n" "Throws" "Sequential Time (s)" "Parallel Time (s)" "π"
+    printf "%-15s %-25s %-25s %-15s\n" "------" "-------------------" "-------------------" "----"
     for points in "${POINT_COUNTS[@]}"; do
         seq_total_time=0
         par_total_time=0
@@ -37,8 +38,10 @@ for threads in "${THREAD_COUNTS[@]}"; do
         # Print the formatted output
         printf "%-15s %-25s %-25s %-15s\n" "$points" "$avg_seq_time" "$avg_par_time" "$pi_value"
 
-        # Save the data to the CSV
+
+        # Save the data to the CSV file
         echo "$threads,$points,$avg_seq_time,$avg_par_time,$pi_value" >> $OUTPUT_CSV
+        echo "Tests completed. Results saved to $OUTPUT_CSV."
     done
     echo
 done
