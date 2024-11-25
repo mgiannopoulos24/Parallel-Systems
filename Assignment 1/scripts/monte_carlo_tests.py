@@ -9,7 +9,7 @@ from pathlib import Path
 # Configuration
 EXECUTABLE = Path("../build/monte_carlo")
 OUTPUT_CSV = "monte_carlo_results.csv"
-POINT_COUNTS = [10**i for i in range(10)]  # 10^0 to 10^9
+POINT_COUNTS = [10**i for i in range(1, 10)]  # 10^1 to 10^9 (10^0=1 may be too small)
 THREAD_COUNTS = [4, 8, 16, 32]
 RUNS_PER_TEST = 5
 
@@ -36,19 +36,23 @@ def run_executable(threads, points):
     seq_time = None
     par_time = None
     pi_estimate = None
+    seq_pi_estimate = None  # To capture Sequential π estimate if needed
 
     # Parse the output
     for line in result.stdout.splitlines():
         if "Sequential time" in line:
             try:
-                seq_time = float(line.split()[-1])
-            except ValueError:
+                # Split by ':' and then take the first part before 'seconds'
+                seq_time_str = line.split(':')[1].strip().split()[0]
+                seq_time = float(seq_time_str)
+            except (IndexError, ValueError):
                 print(f"Failed to parse sequential time from line: {line}")
                 sys.exit(1)
         elif "Parallel time" in line:
             try:
-                par_time = float(line.split()[-1])
-            except ValueError:
+                par_time_str = line.split(':')[1].strip().split()[0]
+                par_time = float(par_time_str)
+            except (IndexError, ValueError):
                 print(f"Failed to parse parallel time from line: {line}")
                 sys.exit(1)
         elif "Parallel π estimate" in line:
@@ -56,6 +60,12 @@ def run_executable(threads, points):
                 pi_estimate = float(line.split()[-1])
             except ValueError:
                 print(f"Failed to parse π estimate from line: {line}")
+                sys.exit(1)
+        elif "Sequential π estimate" in line:
+            try:
+                seq_pi_estimate = float(line.split()[-1])
+            except ValueError:
+                print(f"Failed to parse sequential π estimate from line: {line}")
                 sys.exit(1)
 
     if seq_time is None or par_time is None or pi_estimate is None:
@@ -67,13 +77,17 @@ def run_executable(threads, points):
     return {
         "sequential_time": seq_time,
         "parallel_time": par_time,
-        "pi": pi_estimate
+        "pi": pi_estimate,
+        "sequential_pi": seq_pi_estimate  # Optional: include if you want to track it
     }
 
 def main():
-    # Check if the executable exists
+    # Check if the executable exists and is executable
     if not EXECUTABLE.is_file():
         print(f"Executable not found at {EXECUTABLE}")
+        sys.exit(1)
+    if not os.access(EXECUTABLE, os.X_OK):
+        print(f"Executable at {EXECUTABLE} is not executable.")
         sys.exit(1)
 
     # Open the CSV file for writing
@@ -107,14 +121,15 @@ def main():
                 pi_formatted = f"{pi_value:.6f}"
 
                 # Print the results
-                print(f"{points:<15} {avg_seq_time:<25.5f} {avg_par_time:<25.5f} {pi_formatted:<15}")
+                print(f"{points:<15} {avg_seq_time:<25.6f} {avg_par_time:<25.6f} {pi_formatted:<15}")
 
                 # Write to CSV
-                csv_writer.writerow([threads, points, f"{avg_seq_time:.5f}", f"{avg_par_time:.5f}", pi_formatted])
+                csv_writer.writerow([threads, points, f"{avg_seq_time:.6f}", f"{avg_par_time:.6f}", pi_formatted])
 
             print()  # Blank line for readability
 
     print(f"Tests completed. Results saved to {OUTPUT_CSV}.")
 
 if __name__ == "__main__":
-    main()
+        import os  # Moved import inside to avoid NameError for os.access
+        main()
