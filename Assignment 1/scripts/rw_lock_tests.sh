@@ -6,8 +6,10 @@ OUTPUT_FILE="starvation_results.csv"
 
 # Header for the CSV file and terminal display
 echo "Test Case,Readers,Writers,Priority Mode,Total Reader Time,Reader Time %,Total Writer Time,Writer Time %" > $OUTPUT_FILE
-printf "%-10s %-8s %-8s %-15s %-18s %-15s %-18s %-15s\n" "Test Case" "Readers" "Writers" "Priority Mode" "Total Reader Time" "Reader Time %" "Total Writer Time" "Writer Time %"
-printf "%-10s %-8s %-8s %-15s %-18s %-15s %-18s %-15s\n" "---------" "-------" "-------" "-------------" "-----------------" "--------------" "-----------------" "--------------"
+printf "%-10s %-8s %-8s %-15s %-18s %-15s %-18s %-15s\n" \
+"Test Case" "Readers" "Writers" "Priority Mode" "Total Reader Time" "Reader Time %" "Total Writer Time" "Writer Time %"
+printf "%-10s %-8s %-8s %-15s %-18s %-15s %-18s %-15s\n" \
+"---------" "-------" "-------" "-------------" "-----------------" "--------------" "-----------------" "--------------"
 
 # Test cases
 declare -a TEST_CASES=(
