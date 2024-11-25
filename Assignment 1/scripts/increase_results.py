@@ -5,31 +5,29 @@ import matplotlib.pyplot as plt
 csv_file = "increase_results.csv"
 data = pd.read_csv(csv_file)
 
+# Filter only the rows for "Average" times
+average_data = data[data['Run'] == "Average"]
+
 # Group data by implementation and threads
-implementations = data['Implementation'].unique()
-threads = sorted(data['Threads'].unique())
+implementations = average_data['Implementation'].unique()
+threads = sorted(average_data['Threads'].unique())
 
 # Prepare the plot
 plt.figure(figsize=(12, 8))
 
-# Plot execution times for each implementation and thread count
+# Plot average execution times for each implementation and thread count
 for implementation in implementations:
-    means = []
-    for thread_count in threads:
-        subset = data[(data['Implementation'] == implementation) & (data['Threads'] == thread_count)]
-        mean_time = subset['Execution Time (s)'].mean()  # Calculate the mean execution time
-        means.append(mean_time)
+    subset = average_data[average_data['Implementation'] == implementation]
+    avg_times = subset.sort_values('Threads')['Average Time (s)']  # Ensure sorting by thread count
+    plt.plot(threads, avg_times, label=f"{implementation}", marker='o')
 
-    # Plot the mean execution times
-    plt.plot(threads, means, label=f"{implementation}", marker='o')
-
-# Log scale for thread count if needed (optional)
+# Use a log scale for thread count (optional)
 plt.xscale('log', base=2)
 
 # Add labels, legend, and title
 plt.xlabel('Threads (log scale)', fontsize=14)
-plt.ylabel('Execution Time (s)', fontsize=14)
-plt.title('Execution Time Comparison: increase vs increase_atomic', fontsize=16)
+plt.ylabel('Average Execution Time (s)', fontsize=14)
+plt.title('Average Execution Time Comparison: increase vs increase_atomic', fontsize=16)
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
