@@ -39,7 +39,7 @@ INCREASE_OBJS = $(addprefix $(OBJ_DIR)/, $(notdir $(INCREASE_SRCS:.c=.o)))
 ARRAY_SUM_SRCS = $(SUBDIR_1_3)/array_sum.c
 ARRAY_SUM_OBJS = $(addprefix $(OBJ_DIR)/, $(notdir $(ARRAY_SUM_SRCS:.c=.o)))
 
-RW_LOCK_SRCS = $(SUBDIR_1_4)/rw_lock.c
+RW_LOCK_SRCS = $(SUBDIR_1_4)/rw_lock.c $(USEFUL_CODE_DIR)/my_rand.c
 RW_LOCK_OBJS = $(addprefix $(OBJ_DIR)/, $(notdir $(RW_LOCK_SRCS:.c=.o)))
 
 BARRIER_MUTEX_COND_SRCS = $(SUBDIR_1_5)/barrier_mutex_cond.c
