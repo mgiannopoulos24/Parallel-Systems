@@ -3,12 +3,12 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#define N 10 // Default number of threads
 #define REPS 5 // Default number of iterations
 
 pthread_mutex_t mutex;
 pthread_cond_t cond;
 int count = 0;
+int num_threads = 0; // Declare num_threads globally
 
 void Usage(char* prog_name) {
     fprintf(stderr, "Usage: %s [num_threads]\n", prog_name);
@@ -18,7 +18,7 @@ void Usage(char* prog_name) {
 void Barrier() {
     pthread_mutex_lock(&mutex);
     count++;
-    if (count == N) {
+    if (count == num_threads) { // Use the global num_threads
         count = 0; // Reset for the next iteration
         pthread_cond_broadcast(&cond);
     } else {
@@ -32,9 +32,9 @@ void* ThreadWork(void* rank) {
 
     for (int i = 0; i < REPS; i++) {
         printf("Thread %ld is working on iteration %d\n", my_rank, i);
-        usleep(100000); // Simulate work
+        usleep(20000); // Simulate work
 
-        Barrier();
+        Barrier(); // No need to pass num_threads
         printf("Thread %ld passed the barrier on iteration %d\n", my_rank, i);
     }
 
@@ -44,7 +44,7 @@ void* ThreadWork(void* rank) {
 int main(int argc, char* argv[]) {
     if (argc != 2) Usage(argv[0]);
 
-    int num_threads = strtol(argv[1], NULL, 10);
+    num_threads = strtol(argv[1], NULL, 10); // Assign num_threads
     if (num_threads <= 0) Usage(argv[0]);
 
     pthread_t threads[num_threads];

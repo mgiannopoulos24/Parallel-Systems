@@ -18,7 +18,7 @@ void* ThreadWork(void* rank) {
 
     for (int i = 0; i < REPS; i++) {
         printf("Thread %ld is working on iteration %d\n", my_rank, i);
-        usleep(100000); // Simulate work
+        usleep(20000); // Simulate work
 
         pthread_barrier_wait(&barrier);
         printf("Thread %ld passed the barrier on iteration %d\n", my_rank, i);
