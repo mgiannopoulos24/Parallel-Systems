@@ -9,7 +9,7 @@ OUTPUT_CSV="barrier_results.csv"
 THREAD_COUNTS=(2 4 8 16 32)
 
 # Write headers to the CSV file
-echo "Barrier,Threads,Run,Execution Time (s)" > $OUTPUT_CSV
+echo "Barrier,Threads,Run,Execution Time (s),Average Execution Time (s)" > $OUTPUT_CSV
 
 # Function to run tests and collect data for a given barrier
 run_test() {
@@ -19,8 +19,11 @@ run_test() {
     for threads in "${THREAD_COUNTS[@]}"; do
         echo -e "\nTesting $barrier_name with $threads threads"
         # Print table header for formatted display
-        printf "\n%-15s %-10s %-10s %-20s\n" "Barrier" "Threads" "Run" "Execution Time (s)"
-        printf "%-15s %-10s %-10s %-20s\n" "-------" "-------" "-----" "-----------------"
+        printf "\n%-25s %-10s %-10s %-20s\n" "Barrier" "Threads" "Run" "Execution Time (s)"
+        printf "%-25s %-10s %-10s %-20s\n" "-------------------------" "-------" "-----" "-----------------"
+
+        total_time=0
+
         for run in {1..5}; do
             # Measure execution time
             start_time=$(date +%s.%N)
@@ -28,12 +31,22 @@ run_test() {
             end_time=$(date +%s.%N)
             elapsed_time=$(echo "$end_time - $start_time" | bc)
 
+            # Accumulate the total execution time
+            total_time=$(echo "$total_time + $elapsed_time" | bc)
+
             # Print formatted row to the console
-            printf "%-15s %-10d %-10d %-20.5f\n" "$barrier_name" "$threads" "$run" "$elapsed_time"
+            printf "%-25s %-10d %-10d %-20.5f\n" "$barrier_name" "$threads" "$run" "$elapsed_time"
 
             # Save the result to the CSV
-            echo "$barrier_name,$threads,$run,$elapsed_time" >> $OUTPUT_CSV
+            echo "$barrier_name,$threads,$run,$elapsed_time," >> $OUTPUT_CSV
         done
+
+        # Calculate and print the average execution time
+        avg_time=$(echo "scale=5; $total_time / 5" | bc)
+        echo -e "Average time for $barrier_name with $threads threads: $avg_time seconds"
+        
+        # Append average time to the CSV
+        echo "$barrier_name,$threads,Average,$avg_time,$avg_time" >> $OUTPUT_CSV
     done
 }
 
