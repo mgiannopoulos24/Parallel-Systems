@@ -9,7 +9,7 @@ from pathlib import Path
 # Configuration
 EXECUTABLE = Path("../build/monte_carlo")
 OUTPUT_CSV = "monte_carlo_results.csv"
-POINT_COUNTS = [10**i for i in range(1, 10)]  # 10^1 to 10^9 (10^0=1 may be too small)
+POINT_COUNTS = [10**i for i in range(0, 10)]  # 10^0 to 10^9 (10^0=1 may be too small)
 THREAD_COUNTS = [4, 8, 16, 32]
 RUNS_PER_TEST = 5
 
