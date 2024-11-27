@@ -14,7 +14,7 @@ IMPLEMENTATIONS = {
 }
 OUTPUT_CSV = "increase_results.csv"
 THREAD_COUNTS = [1, 2, 4, 8, 16, 32]
-ITERATIONS_VALUES = [1000000, 10000000, 100000000, 1000000000, 34100654080]
+ITERATIONS_VALUES = [1234567, 9876543, 456789012, 1234567890, 34100654080]
 RUNS_PER_TEST = 5
 
 def run_test(exec_path: Path, implementation_name: str, iterations: int, csv_writer: csv.writer):

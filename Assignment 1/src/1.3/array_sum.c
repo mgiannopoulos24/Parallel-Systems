@@ -6,14 +6,14 @@
 // Global variables
 int threads_count;
 unsigned long long *array;
-const unsigned long long ITERATIONS = 24100654080;
+unsigned long long iterations;
 
 // Function executed by each thread
 void* increase_array_item(void* index) {
     long my_index = *(long*)index; 
-    long my_n = ITERATIONS / threads_count;
-    long my_first_i = my_n * my_index;
-    long my_last_i = (my_index == threads_count - 1) ? ITERATIONS : my_first_i + my_n;
+    unsigned long long my_n = iterations / threads_count;
+    unsigned long long my_first_i = my_n * my_index;
+    unsigned long long my_last_i = (my_index == threads_count - 1) ? iterations : my_first_i + my_n;
 
     for (unsigned long long i = my_first_i; i < my_last_i; i++) {
         array[my_index]++; 
@@ -23,16 +23,17 @@ void* increase_array_item(void* index) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <number_of_threads>\n", argv[0]);
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <number_of_threads> <iterations>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
     threads_count = strtol(argv[1], NULL, 10);
+    iterations = strtoull(argv[2], NULL, 10);
 
-    // Validate the number of threads
-    if (threads_count <= 0 || threads_count > ITERATIONS) {
-        fprintf(stderr, "Error: Number of threads must be between 1 and %llu.\n", ITERATIONS);
+    // Validate the number of threads and iterations
+    if (threads_count <= 0 || iterations <= 0) {
+        fprintf(stderr, "Error: Number of threads and iterations must be positive.\n");
         return EXIT_FAILURE;
     }
 
