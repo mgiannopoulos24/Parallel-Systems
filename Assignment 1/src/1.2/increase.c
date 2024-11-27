@@ -6,7 +6,7 @@
 int threads_count;
 pthread_mutex_t mutex;
 unsigned long long value = 0;
-const unsigned long long ITERATIONS = 34100654080;
+unsigned long long ITERATIONS;
 
 // Function executed by each thread
 void* increase_value(void* rank) {
@@ -29,14 +29,16 @@ void* increase_value(void* rank) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <number_of_threads>\n", argv[0]);
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <number_of_threads> <iterations>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
     threads_count = strtol(argv[1], NULL, 10);
-    if (threads_count <= 0 || threads_count > ITERATIONS) {
-        fprintf(stderr, "Error: Number of threads must be between 1 and %llu.\n", ITERATIONS);
+    ITERATIONS = strtoull(argv[2], NULL, 10);
+
+    if (threads_count <= 0 || ITERATIONS <= 0) {
+        fprintf(stderr, "Error: Number of threads and iterations must be positive.\n");
         return EXIT_FAILURE;
     }
 
