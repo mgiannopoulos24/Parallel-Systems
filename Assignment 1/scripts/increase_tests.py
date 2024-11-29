@@ -13,7 +13,7 @@ IMPLEMENTATIONS = {
     "increase_atomic": "../build/increase_atomic"
 }
 OUTPUT_CSV = "increase_results.csv"
-THREAD_COUNTS = [1, 2, 4, 8, 16, 32]
+THREAD_COUNTS = [2, 4, 8, 16]
 ITERATIONS_VALUES = [34100654080, 45230187465, 98310427653]
 RUNS_PER_TEST = 5
 
