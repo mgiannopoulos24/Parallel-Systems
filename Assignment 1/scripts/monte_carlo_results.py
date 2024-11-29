@@ -16,9 +16,6 @@ for thread_count in threads:
     # plt.plot(subset['Throws'], subset['Sequential Time (s)'], label=f"Seq Time (Threads={thread_count})", linestyle="--") # Uncomment to plot sequential times
     plt.plot(subset['Throws'], subset['Parallel Time (s)'], label=f"Par Time (Threads={thread_count})", marker='o')
 
-# Log scale for better visualization
-plt.xscale('log')
-
 # Add labels, legend, and title
 plt.xlabel('Throws (log scale)', fontsize=14)
 plt.ylabel('Time (s)', fontsize=14)
