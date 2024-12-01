@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
    pthread_cond_destroy(&ok_to_proceed);
    free(thread_handles);
    return 0;
-}  /* main */
+} 
 
 
 /*--------------------------------------------------------------------
@@ -78,7 +78,7 @@ void Usage(char* prog_name) {
 
    fprintf(stderr, "usage: %s <number of threads>\n", prog_name);
    exit(0);
-}  /* Usage */
+}  
 
 
 /*-------------------------------------------------------------------
@@ -128,4 +128,4 @@ void *Thread_work(void* rank) {
    }
 
    return NULL;
-}  /* Thread_work */
+}  

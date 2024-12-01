@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
+#include <bits/time.h>
 
 long long total_points;  // Total number of points to be thrown
 long long points_in_circle = 0;  // Total points inside the circle

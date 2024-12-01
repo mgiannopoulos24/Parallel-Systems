@@ -204,7 +204,7 @@ int main(int argc, char* argv[]) {
    free(thread_handles);
 
    return 0;
-}  /* main */
+}  
 
 
 /*-----------------------------------------------------------------*/
@@ -212,12 +212,11 @@ void Usage(char* prog_name) {
    fprintf(stderr, "usage: %s <thread_count> <priority_mode>\n", prog_name);
    fprintf(stderr, "priority_mode: 'read' for read-priority, 'write' for write-priority\n");
    exit(0);
-}  /* Usage */
+}  
 
 
 /*-----------------------------------------------------------------*/
 void Get_input(int* inserts_in_main_p) {
-
    printf("How many keys should be inserted in the main thread?\n");
    scanf("%d", inserts_in_main_p);
    printf("How many ops total should be executed?\n");
@@ -227,7 +226,7 @@ void Get_input(int* inserts_in_main_p) {
    printf("Percent of ops that should be inserts? (between 0 and 1)\n");
    scanf("%lf", &insert_percent);
    delete_percent = 1.0 - (search_percent + insert_percent);
-}  /* Get_input */
+}  
 
 
 /*-----------------------------------------------------------------*/
@@ -257,7 +256,7 @@ int Insert(int value) {
    }
 
    return rv;
-}  /* Insert */
+}  
 
 
 /*-----------------------------------------------------------------*/
@@ -272,11 +271,11 @@ void Print(void) {
       temp = temp->next;
    }
    printf("\n");
-}  /* Print */
+}  
 
 
 /*-----------------------------------------------------------------*/
-int  Member(int value) {
+int Member(int value) {
    struct list_node_s* temp;
 
    temp = head;
@@ -294,7 +293,7 @@ int  Member(int value) {
 #endif
       return 1;
    }
-}  /* Member */
+}  
 
 
 /*-----------------------------------------------------------------*/
@@ -330,7 +329,7 @@ int Delete(int value) {
    }
 
    return rv;
-}  /* Delete */
+}  
 
 
 /*-----------------------------------------------------------------*/
@@ -353,7 +352,7 @@ void Free_list(void) {
    printf("Freeing %d\n", current->data);
 #endif
    free(current);
-}  /* Free_list */
+}  
 
 
 /*-----------------------------------------------------------------*/
@@ -362,7 +361,7 @@ int  Is_empty(void) {
       return 1;
    else
       return 0;
-}  /* Is_empty */
+}  
 
 
 /*-----------------------------------------------------------------*/
@@ -393,7 +392,7 @@ void* Thread_work(void* rank) {
          my_rwlock_unlock(&rwlock);
          my_delete_count++;
       }
-   }  /* for */
+   }  
 
    pthread_mutex_lock(&count_mutex);
    member_count += my_member_count;
@@ -402,4 +401,4 @@ void* Thread_work(void* rank) {
    pthread_mutex_unlock(&count_mutex);
 
    return NULL;
-}  /* Thread_work */
+}  
