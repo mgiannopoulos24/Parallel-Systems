@@ -29,7 +29,6 @@ for exe in executables:
     )
 
 # Add labels, legend, and title
-plt.xscale('log')  # Logarithmic scale for thread counts
 plt.xlabel('Threads (log scale)', fontsize=14)
 plt.ylabel('Average Execution Time (s)', fontsize=14)
 plt.title('Barrier Implementations: Execution Time vs Threads', fontsize=16)
