@@ -1,0 +1,52 @@
+\documentclass{article}
+\usepackage{graphicx} 
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{array}
+\usepackage{tabularray}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{csquotes}
+\usepackage{alphabeta}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{esint}
+
+\renewcommand{\figurename}{Γράφημα}
+
+\begin{document}
+\begin{table}[ht]
+    \begin{tblr}{
+        @{}X[l, valign=b]X[c, valign=b]X[r, valign=b]@{}
+    }
+
+    \hline
+    % First line, course info
+    \SetCell[c=2]{l}{[ΘΠ04] Παράλληλα Συστήματα} & & {2024-25} \\ 
+    \hline
+    {} & {} & {} \\
+
+    % Title
+    \SetCell[c=3]{c}{ \Large \textbf{Εργασία 1 - Προγραμματισμός με Pthreads} } \\
+    {} & {} & {} \\
+
+    % Name Surname, Student ID
+    \hline \\
+    \SetCell[c=3]{c}{ \textbf{Ονοματεπώνυμο:} Μάριος Γιαννόπουλος } \\
+    \SetCell[c=3]{c}{ \textbf{A.M.:} 1115200000032} \\
+    \hline
+
+    \end{tblr}
+\end{table}
+\section*{Γενικές Πληροφορίες}
+
+\subsection*{Υπολογιστικό Σύστημα}
+Όλο το έργο υλοποιήθηκε στο ίδιο υπολογιστικό περιβάλλον:
+\begin{itemize}
+    \item \textbf{Όνομα Υπολογιστικού Συστήματος:} Linux12
+    \item \textbf{Επεξεργαστής:} Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz
+    \item \textbf{Αριθμός Πυρήνων:} 4
+    \item \textbf{Λειτουργικό Σύστημα:} Linux Ubuntu 20.04.2 LTS
+    \item \textbf{Έκδοση Μεταγλωττιστή:} gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+\end{itemize}
+
+\end{document}
