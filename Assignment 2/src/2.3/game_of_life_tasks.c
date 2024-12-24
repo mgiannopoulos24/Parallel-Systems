@@ -17,7 +17,8 @@ int count_alive_neighbors(int **grid, int size, int x, int y) {
   int count = 0;
   for (int i = -1; i <= 1; i++) {
     for (int j = -1; j <= 1; j++) {
-      if (i == 0 && j == 0) continue;  // Skip the cell itself
+      if (i == 0 && j == 0)
+        continue; // Skip the cell itself
       int nx = x + i;
       int ny = y + j;
       if (nx >= 0 && ny >= 0 && nx < size && ny < size) {
@@ -31,28 +32,28 @@ int count_alive_neighbors(int **grid, int size, int x, int y) {
 // Function to compute the next generation using parallel tasks
 void next_generation_task(int **current, int **next, int size,
                           int num_threads) {
+  // Rather than assigning a separate task for each individual cell in the grid,
+  // a more efficient approach is to divide the grid into blocks (e.g., 32x32 or
+  // 64x64 cells) and assign each block as a single task.
+  int block_size = 32;
 #pragma omp parallel num_threads(num_threads)
   {
 #pragma omp single
     {
-      for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
+      for (int i = 0; i < size; i += block_size) {
+        for (int j = 0; j < size; j += block_size) {
 #pragma omp task firstprivate(i, j)
           {
-            int alive_neighbors = count_alive_neighbors(current, size, i, j);
-            if (current[i][j] == 1) {
-              // Alive cell rules
-              if (alive_neighbors < 2 || alive_neighbors > 3) {
-                next[i][j] = 0;  // Dies
-              } else {
-                next[i][j] = 1;  // Survives
-              }
-            } else {
-              // Dead cell rules
-              if (alive_neighbors == 3) {
-                next[i][j] = 1;  // Becomes alive
-              } else {
-                next[i][j] = 0;  // Stays dead
+            for (int bi = i; bi < i + block_size && bi < size; bi++) {
+              for (int bj = j; bj < j + block_size && bj < size; bj++) {
+                int alive_neighbors =
+                    count_alive_neighbors(current, size, bi, bj);
+                if (current[bi][bj] == 1) {
+                  next[bi][bj] =
+                      (alive_neighbors < 2 || alive_neighbors > 3) ? 0 : 1;
+                } else {
+                  next[bi][bj] = (alive_neighbors == 3) ? 1 : 0;
+                }
               }
             }
           }

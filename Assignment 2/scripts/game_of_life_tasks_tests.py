@@ -40,34 +40,35 @@ def run_test():
 
                 # Run tests for each mode
                 for mode in MODES:
-                    # Run serial test
-                    total_time_mode = 0.0
-                    for run in range(1, RUNS_PER_TEST + 1):
-                        start_time = time.time()
-                        try:
-                            # Run the executable with the specified mode
-                            subprocess.run(
-                                [str(GAME_OF_LIFE_EXEC), str(GENERATIONS), str(rows), str(mode), str(cols), str(THREAD_COUNTS[0])],
-                                stdout=subprocess.DEVNULL,
-                                stderr=subprocess.DEVNULL,
-                                check=True
-                            )
-                        except subprocess.CalledProcessError as e:
-                            print(f"Error: Execution failed for grid={grid}, mode={mode}, run={run}")
-                            print(f"Command: {' '.join(e.cmd)}")
-                            print(f"Return Code: {e.returncode}")
-                            sys.exit(1)
-                        end_time = time.time()
-                        elapsed_time = end_time - start_time
-                        total_time_mode += elapsed_time
-                        # Print formatted row to the console
-                        print(f"{rows}x{cols:<10} {THREAD_COUNTS[0]:<10} {mode:<10} {run:<10} {elapsed_time:<20.5f}")
-                        # Save the result to the CSV
-                        csv_writer.writerow([f"{rows}x{cols}", THREAD_COUNTS[0], mode, run, f"{elapsed_time:.5f}", ""])
+                    # Run tests for each thread count
+                    for threads in THREAD_COUNTS:
+                        total_time_mode = 0.0
+                        for run in range(1, RUNS_PER_TEST + 1):
+                            start_time = time.time()
+                            try:
+                                # Run the executable with the specified mode and thread count
+                                subprocess.run(
+                                    [str(GAME_OF_LIFE_EXEC), str(GENERATIONS), str(rows), str(mode), str(cols), str(threads)],
+                                    stdout=subprocess.DEVNULL,
+                                    stderr=subprocess.DEVNULL,
+                                    check=True
+                                )
+                            except subprocess.CalledProcessError as e:
+                                print(f"Error: Execution failed for grid={grid}, mode={mode}, threads={threads}, run={run}")
+                                print(f"Command: {' '.join(e.cmd)}")
+                                print(f"Return Code: {e.returncode}")
+                                sys.exit(1)
+                            end_time = time.time()
+                            elapsed_time = end_time - start_time
+                            total_time_mode += elapsed_time
+                            # Print formatted row to the console
+                            print(f"{rows}x{cols:<20} {threads:<10} {mode:<10} {run:<10} {elapsed_time:<20.5f}")
+                            # Save the result to the CSV
+                            csv_writer.writerow([f"{rows}x{cols}", threads, mode, run, f"{elapsed_time:.5f}", ""])
 
-                    avg_time_mode = total_time_mode / RUNS_PER_TEST
-                    print(f"Average time for mode {mode} with {rows}x{cols} grid: {avg_time_mode:.5f} seconds")
-                    csv_writer.writerow([f"{rows}x{cols}", THREAD_COUNTS[0], mode, "Average", "", f"{avg_time_mode:.5f}"])
+                        avg_time_mode = total_time_mode / RUNS_PER_TEST
+                        print(f"Average time for mode {mode} with {rows}x{cols} grid and {threads} threads: {avg_time_mode:.5f} seconds")
+                        csv_writer.writerow([f"{rows}x{cols}", threads, mode, "Average", "", f"{avg_time_mode:.5f}"])
 
         # Notify completion
         print(f"\nTests completed. Results saved to {OUTPUT_CSV}.")
