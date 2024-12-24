@@ -104,7 +104,12 @@ int main(int argc, char *argv[]) {
   // Measure execution time
   double start_time = MPI_Wtime();
 
+  // Non-blocking communication setup
+  MPI_Request send_request, recv_request;
+  MPI_Status status;
+
   for (int gen = 0; gen < num_generations; gen++) {
+    // Start calculating the next generation (non-blocking)
     next_generation(current_grid, next_grid, grid_size);
 
     // Swap grids
@@ -112,30 +117,47 @@ int main(int argc, char *argv[]) {
     current_grid = next_grid;
     next_grid = temp;
 
-    // Create a temporary buffer to store the gathered data
-    int *temp_buffer =
-        (int *)malloc(rows_per_process * grid_size * sizeof(int));
+    // Non-blocking communication for edge exchange
+    if (rank != 0) {
+      // Send the top row to the previous rank
+      MPI_Isend(current_grid[start_row], grid_size, MPI_INT, rank - 1, 0,
+                MPI_COMM_WORLD, &send_request);
+    }
+    if (rank != size - 1) {
+      // Receive the bottom row from the next rank
+      MPI_Irecv(current_grid[end_row], grid_size, MPI_INT, rank + 1, 0,
+                MPI_COMM_WORLD, &recv_request);
+    }
+
+    // Synchronize to ensure communication is completed before next iteration
+    if (rank != 0) {
+      MPI_Wait(&send_request, &status);
+    }
+    if (rank != size - 1) {
+      MPI_Wait(&recv_request, &status);
+    }
 
     // Gather the grids back to process 0
-    MPI_Gather(current_grid[start_row], rows_per_process * grid_size, MPI_INT,
-               temp_buffer, rows_per_process * grid_size, MPI_INT, 0,
-               MPI_COMM_WORLD);
-
-    // Copy the gathered data back to the main grid on process 0
     if (rank == 0) {
+      int *temp_buffer =
+          (int *)malloc(rows_per_process * grid_size * sizeof(int));
+      MPI_Gather(current_grid[start_row], rows_per_process * grid_size, MPI_INT,
+                 temp_buffer, rows_per_process * grid_size, MPI_INT, 0,
+                 MPI_COMM_WORLD);
+
+      // Copy the gathered data back to the main grid on process 0
       for (int i = 0; i < size; i++) {
         for (int j = 0; j < grid_size; j++) {
           current_grid[i][j] = temp_buffer[i * grid_size + j];
         }
       }
-    }
 
-    // Free the temporary buffer
-    free(temp_buffer);
+      free(temp_buffer);
 
-    if (rank == 0 && grid_size <= 64) {
-      printf("Generation %d:\n", gen + 1);
-      print_grid(current_grid, grid_size);
+      if (grid_size <= 64) {
+        printf("Generation %d:\n", gen + 1);
+        print_grid(current_grid, grid_size);
+      }
     }
   }
 
