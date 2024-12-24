@@ -107,7 +107,6 @@ void next_generation_serial(int **current, int **next, int size) {
   }
 }
 
-// Function to print the grid
 void print_grid(int **grid, int size) {
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) {
@@ -118,7 +117,6 @@ void print_grid(int **grid, int size) {
   printf("\n");
 }
 
-// Main function
 int main(int argc, char *argv[]) {
   if (argc < 5) {
     fprintf(stderr,
@@ -133,7 +131,6 @@ int main(int argc, char *argv[]) {
   int parallel_mode = atoi(argv[3]);
   int num_threads = atoi(argv[4]);
 
-  // Allocate memory for the grids
   int **current_grid = (int **)malloc(grid_size * sizeof(int *));
   int **next_grid = (int **)malloc(grid_size * sizeof(int *));
   for (int i = 0; i < grid_size; i++) {
@@ -141,7 +138,6 @@ int main(int argc, char *argv[]) {
     next_grid[i] = (int *)malloc(grid_size * sizeof(int));
   }
 
-  // Initialize the grid
   srand(time(NULL));
   initialize_grid(current_grid, grid_size);
 
@@ -150,7 +146,6 @@ int main(int argc, char *argv[]) {
     print_grid(current_grid, grid_size);
   }
 
-  // Measure execution time
   double start_time = omp_get_wtime();
 
   for (int gen = 0; gen < num_generations; gen++) {
@@ -176,7 +171,6 @@ int main(int argc, char *argv[]) {
   double end_time = omp_get_wtime();
   printf("Execution Time: %f seconds\n", end_time - start_time);
 
-  // Free allocated memory
   for (int i = 0; i < grid_size; i++) {
     free(current_grid[i]);
     free(next_grid[i]);

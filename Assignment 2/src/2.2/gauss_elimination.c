@@ -52,7 +52,6 @@ int main(int argc, char* argv[]) {
   char* algorithm_mode = argv[3];
   int num_threads = atoi(argv[4]);
 
-  // Allocate memory for the matrix A and vectors b, x
   double** A = (double**)malloc(n * sizeof(double*));
   for (int i = 0; i < n; i++) {
     A[i] = (double*)malloc(n * sizeof(double));
@@ -60,10 +59,8 @@ int main(int argc, char* argv[]) {
   double* b = (double*)malloc(n * sizeof(double));
   double* x = (double*)malloc(n * sizeof(double));
 
-  // Initialize the system
   initialize_system(A, b, n);
 
-  // Set the number of threads for OpenMP
   omp_set_num_threads(num_threads);
 
   // Choose between serial or parallel execution
@@ -103,13 +100,11 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  // Output the solution (for testing)
   printf("Solution:\n");
   for (int i = 0; i < n; i++) {
     printf("x[%d] = %f\n", i, x[i]);
   }
 
-  // Free allocated memory
   for (int i = 0; i < n; i++) {
     free(A[i]);
   }
