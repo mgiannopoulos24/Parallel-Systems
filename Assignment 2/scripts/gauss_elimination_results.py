@@ -5,41 +5,95 @@ import matplotlib.pyplot as plt
 csv_file = "gauss_elimination_results.csv"
 data = pd.read_csv(csv_file)
 
-# Get the unique thread counts
+# Ensure required columns exist
+required_columns = ['Grid Size', 'Threads', 'Mode', 'Schedule', 'Run', 'Execution Time (s)']
+for col in required_columns:
+    if col not in data.columns:
+        raise ValueError(f"Missing required column: {col}")
+
+# Get the unique thread counts and grid sizes
 threads = sorted(data['Threads'].unique())
+grid_sizes = sorted(data['Grid Size'].unique())
 
-# Get the unique sizes
-sizes = sorted(data['Size'].unique())
+# Plot Execution Time
+plt.figure(figsize=(14, 10))  # Increase the figure size
 
-# Prepare a plot for each size
-plt.figure(figsize=(12, 8))
+# Iterate over each grid size, mode, and schedule to plot the results
+for grid_size in grid_sizes:
+    for mode in data['Mode'].unique():
+        for schedule in data['Schedule'].unique():
+            # Subset the data for the current combination of grid size, mode, and schedule
+            subset = data[(data['Grid Size'] == grid_size) & 
+                          (data['Mode'] == mode) & 
+                          (data['Schedule'] == schedule)]
+            
+            # Calculate the mean execution time for each thread count
+            means = []
+            for thread_count in threads:
+                thread_subset = subset[subset['Threads'] == thread_count]
+                mean_time = thread_subset['Execution Time (s)'].mean()  # Calculate the mean execution time
+                means.append(mean_time)
+            
+            # Plot the mean execution times
+            label = f"Size {grid_size}, Mode {mode}, Schedule {schedule}"
+            plt.plot(threads, means, label=label, marker='o')
 
-# Iterate over each size to plot the results
-for size in sizes:
-    # Subset the data for the current size
-    subset = data[data['Size'] == size]
-    
-    # Calculate the mean execution time for each thread count
-    means = []
-    for thread_count in threads:
-        thread_subset = subset[subset['Threads'] == thread_count]
-        mean_time = thread_subset['Time (s)'].mean()  # Calculate the mean execution time
-        means.append(mean_time)
-    
-    # Plot the mean execution times
-    plt.plot(threads, means, label=f"Size {size}", marker='o')
-
-# Log scale for thread count (optional)
-plt.xscale('log', base=2)
-
-# Add labels, legend, and title
-plt.xlabel('Threads (log scale)', fontsize=14)
+# Plotting Execution Time
+plt.xlabel('Threads', fontsize=14)
 plt.ylabel('Execution Time (s)', fontsize=14)
-plt.title('Execution Time for Gauss Elimination', fontsize=16)
-plt.legend()
-plt.grid(True)
-plt.tight_layout()
+plt.title('Χρόνος Εκτέλεσης κατά Grid Size, Mode και Schedule', fontsize=16)
 
-# Save and show the plot
-plt.savefig("gauss_elimination_results_plot.png")
-plt.show()
+plt.xticks(threads)  # Set x-ticks to thread counts
+plt.grid(True)
+
+# Adjust legend position and size
+plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), fontsize=10)  # Move legend further to the right
+
+# Save the plot for Execution Time
+plt.tight_layout()
+plt.savefig("gauss_elimination_execution_time_plot_updated.png", bbox_inches='tight')  # Ensure legend is fully visible
+plt.close()
+
+# Plot Speedup
+plt.figure(figsize=(14, 10))  # Increase the figure size
+
+# Iterate over each grid size, mode, and schedule to plot the results
+for grid_size in grid_sizes:
+    for mode in data['Mode'].unique():
+        for schedule in data['Schedule'].unique():
+            # Subset the data for the current combination of grid size, mode, and schedule
+            subset = data[(data['Grid Size'] == grid_size) & 
+                          (data['Mode'] == mode) & 
+                          (data['Schedule'] == schedule)]
+            
+            # Calculate the mean execution time for each thread count
+            means = []
+            for thread_count in threads:
+                thread_subset = subset[subset['Threads'] == thread_count]
+                mean_time = thread_subset['Execution Time (s)'].mean()  # Calculate the mean execution time
+                means.append(mean_time)
+            
+            # Calculate and plot speedup
+            if means[0] != 0:  # Avoid division by zero
+                serial_time = means[0]  # Serial time (thread count == minimum threads)
+                speedup = [serial_time / time if time > 0 else 0 for time in means]
+                label = f"Size {grid_size}, Mode {mode}, Schedule {schedule}"
+                plt.plot(threads, speedup, label=label, marker='o')
+
+# Plotting Speedup
+plt.xlabel('Threads', fontsize=14)
+plt.ylabel('Speedup', fontsize=14)
+plt.title('Speedup για Gauss Elimination', fontsize=16)
+
+# Use custom x-ticks
+plt.xticks(threads)  # Set x-ticks to thread counts
+
+plt.grid(True)
+
+# Adjust legend position and size
+plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), fontsize=10)  # Move legend further to the right
+
+# Save the plot for Speedup
+plt.tight_layout()
+plt.savefig("gauss_elimination_speedup_plot_updated.png", bbox_inches='tight')  # Ensure legend is fully visible
+plt.close()

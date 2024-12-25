@@ -4,10 +4,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import sys
+import seaborn as sns
 
 def plot_results(csv_file):
     """
-    Reads the CSV file and creates a combined plot with different line styles and markers.
+    Reads the CSV file and creates a combined scatter plot with different styles for better visibility.
     """
     # Check if the CSV file exists
     if not os.path.isfile(csv_file):
@@ -22,7 +23,7 @@ def plot_results(csv_file):
         sys.exit(1)
     
     # Set a more distinct style for better visibility
-    plt.style.use('ggplot')  # Use built-in 'ggplot' style
+    sns.set(style="whitegrid")  # Use seaborn's whitegrid style for better readability
     
     # List of unique grid sizes and thread counts
     grid_sizes_unique = sorted(df['Grid Size'].unique())
@@ -31,39 +32,29 @@ def plot_results(csv_file):
     # Create a combined plot
     plt.figure(figsize=(14, 10))
     
-    # Define line styles and markers for better visibility
-    line_styles = {
-        1: '-',  # Serial case (solid line)
-        2: '--', # Parallel cases (dashed line)
-    }
+    # Use a color palette for different grid sizes
+    palette = sns.color_palette("Set2", len(grid_sizes_unique))  # Color palette for grid sizes
     
-    markers = ['o', 's', '^', 'D', 'p', 'H']  # Different markers for better distinction
-    
-    for grid_size in grid_sizes_unique:
+    for i, grid_size in enumerate(grid_sizes_unique):
         grid_data = df[df['Grid Size'] == grid_size]
         
-        # Plot execution times for serial and parallel threads
-        for i, thread_count in enumerate(thread_counts_unique):
+        # Scatter plot for execution times with different markers for each thread count
+        for j, thread_count in enumerate(thread_counts_unique):
             data = grid_data[grid_data['Threads'] == thread_count]
             
-            if thread_count == 1:
-                line_style = line_styles[1]  # Serial case
-                label = f"Serial ({grid_size})"
-                marker = markers[0]  # First marker for serial
-            else:
-                line_style = line_styles[2]  # Parallel case
-                label = f"Parallel ({grid_size}, {thread_count} threads)"
-                marker = markers[i % len(markers)]  # Cycle through different markers for parallel
+            # Select a marker for each thread count
+            markers = ['o', 's', '^', 'D', 'p', 'H']
+            marker = markers[j % len(markers)]
             
-            # Plot the data with corresponding line style, marker, and increased line width
-            plt.plot(
+            # Plot with transparency for better visibility in case of overlapping points
+            plt.scatter(
                 data['Threads'],
                 data['Execution Time (s)'],
+                color=palette[i],  # Use a distinct color for each grid size
                 marker=marker,
-                linestyle=line_style,
-                linewidth=2,  # Increased line width for clarity
-                markersize=8,  # Larger markers for better visibility
-                label=label
+                s=100,  # Size of the marker
+                alpha=0.7,  # Transparency for better clarity
+                label=f"Grid {grid_size}, {thread_count} threads"
             )
     
     # Add title and labels
@@ -76,7 +67,7 @@ def plot_results(csv_file):
     plt.tight_layout()
     
     # Save the plot as an image
-    plot_filename = 'game_of_life_results_plot_v2.png'
+    plot_filename = 'game_of_life_results_plot_v3.png'
     plt.savefig(plot_filename, dpi=300)  # High resolution for better clarity
     print(f"Plot saved as '{plot_filename}'.")
     plt.show()
