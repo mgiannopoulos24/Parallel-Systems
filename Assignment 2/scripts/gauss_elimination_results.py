@@ -41,7 +41,7 @@ for grid_size in grid_sizes:
 # Plotting Execution Time
 plt.xlabel('Threads', fontsize=14)
 plt.ylabel('Execution Time (s)', fontsize=14)
-plt.title('Χρόνος Εκτέλεσης κατά Grid Size, Mode και Schedule', fontsize=16)
+plt.title('Execution time for Grid Size, Mode and Schedule', fontsize=16)
 
 plt.xticks(threads)  # Set x-ticks to thread counts
 plt.grid(True)
@@ -51,7 +51,7 @@ plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), fontsize=10)  # Move lege
 
 # Save the plot for Execution Time
 plt.tight_layout()
-plt.savefig("gauss_elimination_execution_time_plot_updated.png", bbox_inches='tight')  # Ensure legend is fully visible
+plt.savefig("gauss_elimination_results.png", bbox_inches='tight')  # Ensure legend is fully visible
 plt.close()
 
 # Plot Speedup
@@ -83,7 +83,7 @@ for grid_size in grid_sizes:
 # Plotting Speedup
 plt.xlabel('Threads', fontsize=14)
 plt.ylabel('Speedup', fontsize=14)
-plt.title('Speedup για Gauss Elimination', fontsize=16)
+plt.title('Gauss Elimination Speedup', fontsize=16)
 
 # Use custom x-ticks
 plt.xticks(threads)  # Set x-ticks to thread counts
@@ -95,5 +95,5 @@ plt.legend(loc='upper left', bbox_to_anchor=(1.05, 1), fontsize=10)  # Move lege
 
 # Save the plot for Speedup
 plt.tight_layout()
-plt.savefig("gauss_elimination_speedup_plot_updated.png", bbox_inches='tight')  # Ensure legend is fully visible
+plt.savefig("gauss_elimination_speedup.png", bbox_inches='tight')  # Ensure legend is fully visible
 plt.close()
