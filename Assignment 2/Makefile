@@ -5,7 +5,6 @@ CFLAGS = -Wall -g -fopenmp
 SRC_DIR = src
 OBJ_DIR = obj
 BUILD_DIR = build
-INCLUDE_DIR = include
 
 # Subdirectories
 SUBDIR_2_1 = $(SRC_DIR)/2.1
@@ -45,22 +44,22 @@ game_of_life_tasks: $(GAME_OF_LIFE_TASKS_TARGET)
 # Rule to build game_of_life
 $(GAME_OF_LIFE_TARGET): $(GAME_OF_LIFE_OBJS)
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 # Rule to build gauss_elimination
 $(GAUSS_ELIMINATION_TARGET): $(GAUSS_ELIMINATION_OBJS)
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 # Rule to build game_of_life_tasks
 $(GAME_OF_LIFE_TASKS_TARGET): $(GAME_OF_LIFE_TASKS_OBJS)
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 # Rule to compile .c files into .o files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/*/%.c
 	mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 # Ensure obj directory exists before compiling
 $(OBJ_DIR):

@@ -84,7 +84,7 @@ def plot_results(csv_file):
     plt.tight_layout()
     
     # Save the plot as an image
-    plot_filename = 'game_of_life_task_parallelism_results_seaborn.png'
+    plot_filename = 'game_of_life_tasks_results.png'
     plt.savefig(plot_filename, dpi=300)  # High resolution for better clarity
     print(f"Plot saved as '{plot_filename}'.")
     plt.show()
