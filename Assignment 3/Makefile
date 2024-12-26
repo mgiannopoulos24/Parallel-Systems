@@ -5,7 +5,6 @@ CFLAGS = -O2 -fopenmp
 SRC_DIR = src
 OBJ_DIR = obj
 BUILD_DIR = build
-INCLUDE_DIR = include
 
 # Subdirectories
 SUBDIR_3_1 = $(SRC_DIR)/3.1
@@ -31,9 +30,6 @@ GAME_OF_LIFE_RECV_OBJS = $(addprefix $(OBJ_DIR)/, $(notdir $(GAME_OF_LIFE_RECV_S
 
 GAME_OF_LIFE_HYBRID_SRCS = $(SUBDIR_3_4)/game_of_life_hybrid.c 
 GAME_OF_LIFE_HYBRID_OBJS = $(addprefix $(OBJ_DIR)/, $(notdir $(GAME_OF_LIFE_HYBRID_SRCS:.c=.o)))
-
-# Include directories
-INCLUDES = -I$(INCLUDE_DIR)
 
 # Default rule
 all: $(GAME_OF_LIFE_MPI_TARGET) $(MATRIX_VECTOR_MPI_TARGET) $(GAME_OF_LIFE_HYBRID_TARGET)
@@ -73,7 +69,7 @@ $(GAME_OF_LIFE_HYBRID_TARGET): $(GAME_OF_LIFE_HYBRID_OBJS)
 # Rule to compile .c files into .o files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/*/%.c
 	mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 # Ensure obj directory exists before compiling
 $(OBJ_DIR):
