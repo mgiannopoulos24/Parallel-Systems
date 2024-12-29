@@ -122,10 +122,15 @@ int main(int argc, char *argv[]) {
         if (rank > 0) {
             MPI_Sendrecv(local_current, grid_size, MPI_INT, rank - 1, 0,
                          top_row, grid_size, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        } else {
+            memset(top_row, 0, grid_size * sizeof(int));
         }
+
         if (rank < size - 1) {
             MPI_Sendrecv(&local_current[(rows_per_process - 1) * grid_size], grid_size, MPI_INT, rank + 1, 0,
                          bottom_row, grid_size, MPI_INT, rank + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }  else {
+            memset(bottom_row, 0, grid_size * sizeof(int)); // Handle boundary condition for the last row
         }
 
         // Compute next generation
