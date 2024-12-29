@@ -7,8 +7,8 @@ import sys
 from pathlib import Path
 
 # Configuration
-GAME_OF_LIFE_EXEC = Path("../build/game_of_life_mpi")
-OUTPUT_CSV = "game_of_life_mpi_results.csv"
+GAME_OF_LIFE_EXEC = Path("../build/game_of_life_recv")
+OUTPUT_CSV = "game_of_life_recv_results.csv"
 GRIDS = [(64, 64), (1024, 1024), (4096, 4096)]  # Grid sizes
 GENERATIONS = 1000
 RUNS_PER_TEST = 5

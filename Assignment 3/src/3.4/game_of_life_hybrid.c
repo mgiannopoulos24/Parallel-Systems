@@ -77,13 +77,17 @@ void print_grid(int *grid, int size) {
 
 // Main function
 int main(int argc, char *argv[]) {
-    if (argc < 3) {
-        fprintf(stderr, "Usage: %s <num_generations> <grid_size>\n", argv[0]);
+    if (argc < 4) {
+        fprintf(stderr, "Usage: %s <grid_size> <num_generations> <num_threads_per_node>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
-    int num_generations = atoi(argv[1]);
-    int grid_size = atoi(argv[2]);
+    int grid_size = atoi(argv[1]);
+    int num_generations = atoi(argv[2]);
+    int num_threads_per_node = atoi(argv[3]);
+
+    // Set the number of threads for OpenMP
+    omp_set_num_threads(num_threads_per_node);
 
     MPI_Init(&argc, &argv);
     int rank, size;
