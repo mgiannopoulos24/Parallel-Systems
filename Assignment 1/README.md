@@ -6,21 +6,21 @@ This project contains multiple implementations of synchronization mechanisms and
 
 ## Implementations
 
-### 1. Monte Carlo Pi Estimation (`monte_carlo.c`)
-This program uses the Monte Carlo method to estimate the value of . It supports both serial and parallel execution using threads, providing insights into the performance differences between the two approaches.
-### 2. Shared Variable Update (`shared_variable.c`)
+### 1. Monte Carlo Pi Estimation (`monte_carlo_pi.c`)
+This program uses the Monte Carlo method to estimate the value of $\pi$. It supports both serial and parallel execution using threads, providing insights into the performance differences between the two approaches.
+### 2. Shared Variable Update (`increase.c` and `increase_atomic.c`)
 This program demonstrates a shared variable update using Pthreads. Each thread increases a shared variable using two approaches:
 - Mutex-based synchronization.
 - Atomic operations.
-### 3. Shared Array Update (`shared_array.c`)
-In this program, each thread updates a specific element of a shared array. This ensures no contention among threads, avoiding the need for synchronization.
+### 3. Shared Array Update (`array_sum.c`)
+This program demonstrates parallel computation using threads to distribute a large number of iterations among them. Each thread updates its own portion of a global array, and the results are summed to verify the computation.
 ### 4. Reader-Writer Locks (`rw_lock.c`)
 This program implements two approaches for reader-writer synchronization:
 - Reader Priority: Prioritizes readers over writers.
 - Writer Priority: Prioritizes writers over readers.
 ### 5. Barrier Implementations
 #### 5.1. Barrier using pthread_barrier_t (`barrier_pthread.c`)
-This program uses the native Pthreads pthread_barrier_t to synchronize threads at a barrier point.
+This program uses the native Pthreads `pthread_barrier_t` to synchronize threads at a barrier point.
 #### 5.2. Barrier using Mutex and Condition Variables (`barrier_mutex_cond.c`)
 This program manually implements a barrier using mutexes and condition variables, offering flexibility for environments without native barrier support.
 #### 5.3. Sense-Reversal Barrier (`barrier_sense_reversal.c`)
