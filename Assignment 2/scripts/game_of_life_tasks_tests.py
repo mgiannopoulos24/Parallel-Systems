@@ -29,7 +29,7 @@ def run_test():
         with open(OUTPUT_CSV, mode='w', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             # Write the header
-            csv_writer.writerow(["Grid Size", "Threads", "Mode", "Run", "Execution Time (s)", "Average Time (s)"])
+            csv_writer.writerow(["Grid Size", "Threads", "Mode", "Run", "Execution Time (s)"])
 
             # Iterate over each grid size
             for grid in GRIDS:
@@ -42,17 +42,23 @@ def run_test():
                 for mode in MODES:
                     # Run tests for each thread count
                     for threads in THREAD_COUNTS:
+                        # For serial mode (mode 0), force thread count to 1
+                        if mode == 0:
+                            threads = 1
+
                         total_time_mode = 0.0
                         for run in range(1, RUNS_PER_TEST + 1):
                             start_time = time.time()
                             try:
                                 # Run the executable with the specified mode and thread count
+                                command = [str(GAME_OF_LIFE_EXEC), str(GENERATIONS), str(rows), str(mode), str(threads)]
                                 subprocess.run(
-                                    [str(GAME_OF_LIFE_EXEC), str(GENERATIONS), str(rows), str(mode), str(cols), str(threads)],
+                                    command,
                                     stdout=subprocess.DEVNULL,
                                     stderr=subprocess.DEVNULL,
                                     check=True
                                 )
+                                print(command)
                             except subprocess.CalledProcessError as e:
                                 print(f"Error: Execution failed for grid={grid}, mode={mode}, threads={threads}, run={run}")
                                 print(f"Command: {' '.join(e.cmd)}")

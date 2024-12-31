@@ -44,12 +44,14 @@ def run_test():
                     start_time = time.time()
                     try:
                         # Run the executable with serial mode (pass 1 thread)
+                        command = [str(GAME_OF_LIFE_EXEC), str(GENERATIONS), str(rows), str(0), str(1)]
                         subprocess.run(
-                            [str(GAME_OF_LIFE_EXEC), str(1), str(rows), str(cols), str(GENERATIONS)],
+                            command,
                             stdout=subprocess.DEVNULL,
                             stderr=subprocess.DEVNULL,
                             check=True
                         )
+                        print(command) # Debug print
                     except subprocess.CalledProcessError as e:
                         print(f"Error: Execution failed for grid={grid}, serial, run={run}")
                         print(f"Command: {' '.join(e.cmd)}")
@@ -59,13 +61,13 @@ def run_test():
                     elapsed_time = end_time - start_time
                     total_time_serial += elapsed_time
                     # Print formatted row to the console
-                    print(f"{rows}x{cols:<10} {'Serial':<10} {run:<10} {elapsed_time:<20.5f} {'Serial':<10}")
+                    print(f"{rows}x{cols:<20} {'1':<10} {run:<10} {elapsed_time:<20.5f} {'Serial':<10}")
                     # Save the result to the CSV
-                    csv_writer.writerow([f"{rows}x{cols}", "Serial", run, f"{elapsed_time:.5f}", "", "Serial"])
+                    csv_writer.writerow([f"{rows}x{cols}", run, f"{elapsed_time:.5f}", "", "Serial"])
 
                 avg_time_serial = total_time_serial / RUNS_PER_TEST
                 print(f"Average time for serial with {rows}x{cols} grid: {avg_time_serial:.5f} seconds")
-                csv_writer.writerow([f"{rows}x{cols}", "Serial", "Average", "", f"{avg_time_serial:.5f}", "Serial"])
+                csv_writer.writerow([f"{rows}x{cols}", "Average", "", f"{avg_time_serial:.5f}", "Serial"])
 
                 # Run parallel tests for each thread count
                 for threads in THREAD_COUNTS:
@@ -73,13 +75,15 @@ def run_test():
                     for run in range(1, RUNS_PER_TEST + 1):
                         start_time = time.time()
                         try:
+                            command = [str(GAME_OF_LIFE_EXEC), str(GENERATIONS), str(rows), str(1), str(threads)]
                             # Run the executable with the specified number of threads
                             subprocess.run(
-                                [str(GAME_OF_LIFE_EXEC), str(threads), str(rows), str(cols), str(GENERATIONS)],
+                                command,
                                 stdout=subprocess.DEVNULL,
                                 stderr=subprocess.DEVNULL,
                                 check=True
                             )
+                            print(command)
                         except subprocess.CalledProcessError as e:
                             print(f"Error: Execution failed for grid={grid}, threads={threads}, run={run}")
                             print(f"Command: {' '.join(e.cmd)}")
