@@ -39,7 +39,7 @@ void initialize_system(double** A, double* b, int n) {
 
 int main(int argc, char* argv[]) {
   if (argc != 6) {
-    printf("Usage: %s <size> <serial/parallel> <row/column> <schedule_mode> <num_threads>\n",
+    printf("Usage: %s <size> <serial/parallel> <row/column> [<schedule_mode>] <num_threads>\n",
            argv[0]);
     return 1;
   }
@@ -63,10 +63,27 @@ int main(int argc, char* argv[]) {
 
   // Choose between serial or parallel execution
   if (strcmp(execution_mode, "serial") == 0) {
+    omp_set_num_threads(1); 
     if (strcmp(algorithm_mode, "row") == 0) {
-      back_substitution_row_based(A, b, x, n);
-    } else {
-      back_substitution_column_based(A, b, x, n);
+        // Serial execution (Row-based back substitution)
+        for (int row = n - 1; row >= 0; row--) {
+            x[row] = b[row];
+            for (int col = row + 1; col < n; col++) {
+                x[row] -= A[row][col] * x[col];
+            }
+            x[row] /= A[row][row];
+        }
+    } else if (strcmp(algorithm_mode, "column") == 0) {
+        // Serial execution (Column-based back substitution)
+        for (int row = 0; row < n; row++) {
+            x[row] = b[row];
+        }
+        for (int col = n - 1; col >= 0; col--) {
+            x[col] /= A[col][col];
+            for (int row = 0; row < col; row++) {
+                x[row] -= A[row][col] * x[col];
+            }
+        }
     }
   } else if (strcmp(execution_mode, "parallel") == 0) {
     if (strcmp(algorithm_mode, "row") == 0) {
