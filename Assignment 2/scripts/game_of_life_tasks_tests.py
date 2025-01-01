@@ -40,12 +40,13 @@ def run_test():
 
                 # Run tests for each mode
                 for mode in MODES:
-                    # Run tests for each thread count
-                    for threads in THREAD_COUNTS:
-                        # For serial mode (mode 0), force thread count to 1
-                        if mode == 0:
-                            threads = 1
+                    # Determine thread counts based on mode
+                    if mode == 0:  # Serial mode
+                        thread_list = [1]  # Serial mode always uses 1 thread
+                    else:
+                        thread_list = THREAD_COUNTS
 
+                    for threads in thread_list:
                         total_time_mode = 0.0
                         for run in range(1, RUNS_PER_TEST + 1):
                             start_time = time.time()
@@ -70,11 +71,12 @@ def run_test():
                             # Print formatted row to the console
                             print(f"{rows}x{cols:<20} {threads:<10} {mode:<10} {run:<10} {elapsed_time:<20.5f}")
                             # Save the result to the CSV
-                            csv_writer.writerow([f"{rows}x{cols}", threads, mode, run, f"{elapsed_time:.5f}", ""])
+                            csv_writer.writerow([f"{rows}x{cols}", threads, mode, run, f"{elapsed_time:.5f}"])
 
+                        # Calculate and save the average time
                         avg_time_mode = total_time_mode / RUNS_PER_TEST
                         print(f"Average time for mode {mode} with {rows}x{cols} grid and {threads} threads: {avg_time_mode:.5f} seconds")
-                        csv_writer.writerow([f"{rows}x{cols}", threads, mode, "Average", "", f"{avg_time_mode:.5f}"])
+                        csv_writer.writerow([f"{rows}x{cols}", threads, mode, "Average", f"{avg_time_mode:.5f}"])
 
         # Notify completion
         print(f"\nTests completed. Results saved to {OUTPUT_CSV}.")

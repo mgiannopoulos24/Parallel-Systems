@@ -5,6 +5,7 @@
 
 // Function to initialize the grid with random values
 void initialize_grid(int **grid, int size) {
+#pragma omp parallel for collapse(2)
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) {
       grid[i][j] = rand() % 2;
@@ -17,7 +18,8 @@ int count_alive_neighbors(int **grid, int size, int x, int y) {
   int count = 0;
   for (int i = -1; i <= 1; i++) {
     for (int j = -1; j <= 1; j++) {
-      if (i == 0 && j == 0) continue;  // Skip the cell itself
+      if (i == 0 && j == 0)
+        continue; // Skip the cell itself
       int nx = x + i;
       int ny = y + j;
       if (nx >= 0 && ny >= 0 && nx < size && ny < size) {
@@ -28,31 +30,36 @@ int count_alive_neighbors(int **grid, int size, int x, int y) {
   return count;
 }
 
-// Function to compute the next generation of the grid
-void next_generation(int **current, int **next, int size, int num_threads) {
+// Function to compute the next generation using parallel for
+void next_generation_for(int **current, int **next, int size, int num_threads) {
 #pragma omp parallel for num_threads(num_threads) collapse(2)
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) {
       int alive_neighbors = count_alive_neighbors(current, size, i, j);
       if (current[i][j] == 1) {
-        // Alive cell rules
-        if (alive_neighbors < 2 || alive_neighbors > 3) {
-          next[i][j] = 0;  // Dies
-        } else {
-          next[i][j] = 1;  // Survives
-        }
+        next[i][j] = (alive_neighbors < 2 || alive_neighbors > 3) ? 0 : 1;
       } else {
-        // Dead cell rules
-        if (alive_neighbors == 3) {
-          next[i][j] = 1;  // Becomes alive
-        } else {
-          next[i][j] = 0;  // Stays dead
-        }
+        next[i][j] = (alive_neighbors == 3) ? 1 : 0;
       }
     }
   }
 }
 
+// Function to compute the next generation in serial
+void next_generation_serial(int **current, int **next, int size) {
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < size; j++) {
+      int alive_neighbors = count_alive_neighbors(current, size, i, j);
+      if (current[i][j] == 1) {
+        next[i][j] = (alive_neighbors < 2 || alive_neighbors > 3) ? 0 : 1;
+      } else {
+        next[i][j] = (alive_neighbors == 3) ? 1 : 0;
+      }
+    }
+  }
+}
+
+// Function to print the grid
 void print_grid(int **grid, int size) {
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) {
@@ -64,10 +71,9 @@ void print_grid(int **grid, int size) {
 }
 
 int main(int argc, char *argv[]) {
-  if (argc < 5) {
+  if (argc < 4) {
     fprintf(stderr,
-            "Usage: %s <num_generations> <grid_size> <mode: 0=serial, "
-            "1=parallel> <num_threads>\n",
+            "Usage: %s <num_generations> <grid_size> <mode: 0=serial, 1=parallel-for> <num_threads>\n",
             argv[0]);
     return EXIT_FAILURE;
   }
@@ -75,7 +81,7 @@ int main(int argc, char *argv[]) {
   int num_generations = atoi(argv[1]);
   int grid_size = atoi(argv[2]);
   int parallel_mode = atoi(argv[3]);
-  int num_threads = atoi(argv[4]);
+  int num_threads = (argc == 5) ? atoi(argv[4]) : 1;
 
   int **current_grid = (int **)malloc(grid_size * sizeof(int *));
   int **next_grid = (int **)malloc(grid_size * sizeof(int *));
@@ -92,14 +98,13 @@ int main(int argc, char *argv[]) {
     print_grid(current_grid, grid_size);
   }
 
-  // Measure execution time
   double start_time = omp_get_wtime();
 
   for (int gen = 0; gen < num_generations; gen++) {
-    if (parallel_mode) {
-      next_generation(current_grid, next_grid, grid_size, num_threads);
+    if (parallel_mode == 1) {
+      next_generation_for(current_grid, next_grid, grid_size, num_threads);
     } else {
-      next_generation(current_grid, next_grid, grid_size, 1);  // Serial mode
+      next_generation_serial(current_grid, next_grid, grid_size);
     }
 
     // Swap grids

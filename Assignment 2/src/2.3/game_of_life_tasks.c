@@ -5,6 +5,7 @@
 
 // Function to initialize the grid with random values
 void initialize_grid(int **grid, int size) {
+#pragma omp parallel for collapse(2)
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) {
       grid[i][j] = rand() % 2;
@@ -30,11 +31,7 @@ int count_alive_neighbors(int **grid, int size, int x, int y) {
 }
 
 // Function to compute the next generation using parallel tasks
-void next_generation_task(int **current, int **next, int size,
-                          int num_threads) {
-  // Rather than assigning a separate task for each individual cell in the grid,
-  // a more efficient approach is to divide the grid into blocks (e.g., 32x32 or
-  // 64x64 cells) and assign each block as a single task.
+void next_generation_task(int **current, int **next, int size, int num_threads) {
   int block_size = 32;
 #pragma omp parallel num_threads(num_threads)
   {
@@ -46,11 +43,9 @@ void next_generation_task(int **current, int **next, int size,
           {
             for (int bi = i; bi < i + block_size && bi < size; bi++) {
               for (int bj = j; bj < j + block_size && bj < size; bj++) {
-                int alive_neighbors =
-                    count_alive_neighbors(current, size, bi, bj);
+                int alive_neighbors = count_alive_neighbors(current, size, bi, bj);
                 if (current[bi][bj] == 1) {
-                  next[bi][bj] =
-                      (alive_neighbors < 2 || alive_neighbors > 3) ? 0 : 1;
+                  next[bi][bj] = (alive_neighbors < 2 || alive_neighbors > 3) ? 0 : 1;
                 } else {
                   next[bi][bj] = (alive_neighbors == 3) ? 1 : 0;
                 }
@@ -70,17 +65,9 @@ void next_generation_for(int **current, int **next, int size, int num_threads) {
     for (int j = 0; j < size; j++) {
       int alive_neighbors = count_alive_neighbors(current, size, i, j);
       if (current[i][j] == 1) {
-        if (alive_neighbors < 2 || alive_neighbors > 3) {
-          next[i][j] = 0;
-        } else {
-          next[i][j] = 1;
-        }
+        next[i][j] = (alive_neighbors < 2 || alive_neighbors > 3) ? 0 : 1;
       } else {
-        if (alive_neighbors == 3) {
-          next[i][j] = 1;
-        } else {
-          next[i][j] = 0;
-        }
+        next[i][j] = (alive_neighbors == 3) ? 1 : 0;
       }
     }
   }
@@ -92,22 +79,15 @@ void next_generation_serial(int **current, int **next, int size) {
     for (int j = 0; j < size; j++) {
       int alive_neighbors = count_alive_neighbors(current, size, i, j);
       if (current[i][j] == 1) {
-        if (alive_neighbors < 2 || alive_neighbors > 3) {
-          next[i][j] = 0;
-        } else {
-          next[i][j] = 1;
-        }
+        next[i][j] = (alive_neighbors < 2 || alive_neighbors > 3) ? 0 : 1;
       } else {
-        if (alive_neighbors == 3) {
-          next[i][j] = 1;
-        } else {
-          next[i][j] = 0;
-        }
+        next[i][j] = (alive_neighbors == 3) ? 1 : 0;
       }
     }
   }
 }
 
+// Function to print the grid
 void print_grid(int **grid, int size) {
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) {
