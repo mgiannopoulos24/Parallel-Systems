@@ -8,8 +8,8 @@ import sys
 
 def plot_results(csv_file):
     """
-    Reads the CSV file and creates a combined plot with different line styles and markers for serial and parallel tasks.
-    Uses seaborn for enhanced aesthetics.
+    Reads the CSV file and creates a combined plot with lines and dots for serial and parallel tasks.
+    Filters rows containing 'Average' in the 'Run' column.
     """
     # Check if the CSV file exists
     if not os.path.isfile(csv_file):
@@ -18,74 +18,63 @@ def plot_results(csv_file):
     
     # Read the CSV into a DataFrame
     try:
-        df = pd.read_csv(csv_file)
+        df = pd.read_csv(
+            csv_file,
+            names=['Grid Size', 'Threads', 'Mode', 'Run', 'Execution Time (s)'],
+            header=None
+        )
     except Exception as e:
         print(f"Error: Could not read the CSV file. {e}")
         sys.exit(1)
     
+    # Filter rows containing the word "Average" in the 'Run' column
+    df = df[df['Run'].str.contains('Average', na=False)]
+    
+    # Convert numeric columns
+    df['Threads'] = pd.to_numeric(df['Threads'], errors='coerce')
+    df['Execution Time (s)'] = pd.to_numeric(df['Execution Time (s)'], errors='coerce')
+
     # Set Seaborn style for better aesthetics
-    sns.set(style="whitegrid")  # Use Seaborn's built-in whitegrid style
+    sns.set(style="whitegrid")
     
     # List of unique grid sizes and thread counts
     grid_sizes_unique = sorted(df['Grid Size'].unique())
-    thread_counts_unique = sorted(df['Threads'].unique())
+    thread_counts_unique = sorted(df['Threads'].dropna().unique())
     
-    # Create a combined plot
+    # Create a plot
     plt.figure(figsize=(14, 10))
-    
-    # Define line styles and markers for better visibility
-    line_styles = {
-        1: '-',  # Serial case (solid line)
-        2: '--', # Parallel cases (dashed line)
-        3: ':',  # Parallel task (dotted line)
-    }
-    
-    markers = ['o', 's', '^', 'D', 'p', 'H']  # Different markers for better distinction
     
     for grid_size in grid_sizes_unique:
         grid_data = df[df['Grid Size'] == grid_size]
         
-        # Plot execution times for serial and parallel threads (including mode 2 for tasks)
-        for i, thread_count in enumerate(thread_counts_unique):
-            data = grid_data[grid_data['Threads'] == thread_count]
-            mode = grid_data['Mode'].iloc[0]  # Assuming mode is the same for all rows in a given grid size
+        for mode in grid_data['Mode'].unique():
+            mode_data = grid_data[grid_data['Mode'] == mode]
             
-            if mode == 1:  # Serial case
-                line_style = line_styles[1]  # Solid line for serial
-                label = f"Serial ({grid_size})"
-                marker = markers[0]  # First marker for serial
-            elif mode == 2:  # Parallel task (mode 2 for tasks)
-                line_style = line_styles[3]  # Dotted line for parallel task
-                label = f"Parallel Task (Mode 2, {grid_size})"
-                marker = markers[i % len(markers)]  # Cycle through different markers for parallel task
-            else:  # Parallel threads (standard parallel case)
-                line_style = line_styles[2]  # Dashed line for general parallel
-                label = f"Parallel ({grid_size}, {thread_count} threads)"
-                marker = markers[i % len(markers)]  # Cycle through different markers for parallel
+            label = f"Grid {grid_size}, Mode {mode}"
             
-            # Plot the data with corresponding line style, marker, and increased line width
+            # Plot the data with lines and dots
             plt.plot(
-                data['Threads'],
-                data['Execution Time (s)'],
-                marker=marker,
-                linestyle=line_style,
-                linewidth=2,  # Increased line width for clarity
-                markersize=8,  # Larger markers for better visibility
+                mode_data['Threads'],
+                mode_data['Execution Time (s)'],
+                marker='o',  # Dots at each data point
+                linestyle='-',  # Solid line connecting the points
+                linewidth=2,  # Thicker lines for better visibility
+                markersize=6,  # Moderate-sized markers
                 label=label
             )
     
     # Add title and labels
-    plt.title('Execution Time vs Number of Threads for Game of Life with Task Parallelism', fontsize=18)
+    plt.title('Execution Time vs Number of Threads for Game of Life (Average Runs)', fontsize=18)
     plt.xlabel('Number of Threads', fontsize=14)
     plt.ylabel('Execution Time (seconds)', fontsize=14)
     plt.xticks(thread_counts_unique)
-    plt.legend(title='Grid Sizes and Thread Counts', loc='upper left', bbox_to_anchor=(1.05, 1), fontsize=12)
-    plt.grid(True, linestyle=':', color='gray')  # Lighter grid for better clarity
+    plt.legend(title='Grid Sizes and Modes', loc='upper left', bbox_to_anchor=(1.05, 1), fontsize=12)
+    plt.grid(True, linestyle=':', color='gray')
     plt.tight_layout()
     
     # Save the plot as an image
     plot_filename = 'game_of_life_tasks_results.png'
-    plt.savefig(plot_filename, dpi=300)  # High resolution for better clarity
+    plt.savefig(plot_filename, dpi=300)
     print(f"Plot saved as '{plot_filename}'.")
     plt.show()
 
