@@ -8,6 +8,7 @@ from pathlib import Path
 
 # Configuration
 GAME_OF_LIFE_EXEC = Path("../build/game_of_life_mpi")
+MACHINES_FILE = Path("../machines")  # Path to the machines file
 OUTPUT_CSV = "game_of_life_mpi_results.csv"
 GRIDS = [(64, 64), (1024, 1024), (4096, 4096)]  # Grid sizes
 GENERATIONS = 1000
@@ -21,6 +22,10 @@ def run_test():
     """
     if not GAME_OF_LIFE_EXEC.is_file():
         print(f"Error: The executable '{GAME_OF_LIFE_EXEC}' does not exist.")
+        sys.exit(1)
+
+    if not MACHINES_FILE.is_file():
+        print(f"Error: The machines file '{MACHINES_FILE}' does not exist.")
         sys.exit(1)
 
     try:
@@ -39,12 +44,14 @@ def run_test():
                     for run in range(1, RUNS_PER_TEST + 1):
                         start_time = time.time()
                         try:
+                            command = ["mpiexec", "-f", str(MACHINES_FILE), "-n", str(proc), str(GAME_OF_LIFE_EXEC), str(GENERATIONS), str(rows)]
                             subprocess.run(
-                                ["mpirun", "-np", str(proc), str(GAME_OF_LIFE_EXEC), str(rows), str(cols), str(GENERATIONS)],
+                                command,
                                 stdout=subprocess.DEVNULL,
                                 stderr=subprocess.DEVNULL,
                                 check=True
                             )
+                            print(f"Command: {' '.join(command)}") # Debugging
                         except subprocess.CalledProcessError as e:
                             print(f"Error: Execution failed for grid={grid}, processes={proc}, run={run}")
                             print(f"Command: {' '.join(e.cmd)}")
