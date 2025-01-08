@@ -122,9 +122,11 @@ int main(int argc, char *argv[]) {
     // Wait for the communication to complete
     if (rank > 0) {
       MPI_Wait(&recv_request[0], &recv_status[0]);
+      MPI_Wait(&send_request[0], &send_status[0]);
     }
     if (rank < size - 1) {
       MPI_Wait(&recv_request[1], &recv_status[1]);
+      MPI_Wait(&send_request[1], &send_status[1]);
     }
 
     // Compute the next generation for the boundary rows
