@@ -58,13 +58,12 @@ int main(int argc, char *argv[]) {
 
   int block_size = n / size;
   double *matrix = NULL;
-  double *vector = NULL;
+  double *vector = (double *)malloc(n * sizeof(double));
   double *local_matrix = (double *)malloc(n * block_size * sizeof(double));
   double *local_result = (double *)malloc(n * sizeof(double));
 
   if (rank == 0) {
     matrix = (double *)malloc(n * n * sizeof(double));
-    vector = (double *)malloc(n * sizeof(double));
     initialize_matrix_and_vector(matrix, vector, n);
 
     printf("Matrix:\n");
@@ -122,11 +121,11 @@ int main(int argc, char *argv[]) {
     printf("Serial Time: %.6f seconds\n", serial_end_time - serial_start_time);
 
     free(matrix);
-    free(vector);
     free(result);
     free(serial_result);
   }
 
+  free(vector);
   free(local_matrix);
   free(local_result);
 
