@@ -11,7 +11,7 @@ from pathlib import Path
 EXECUTABLE = Path("../build/matrix_vector_mpi")  
 OUTPUT_CSV = "matrix_vector_mpi_results.csv"
 MACHINES_FILE = Path("../machines")  # Path to the machines file
-PROCESSES = [2, 4, 8]  # Number of processes to test
+PROCESSES = [2, 4, 5, 10]  # Number of processes to test
 SIZE_LIST = [100, 1000, 5000, 10000]  # Grid sizes to test
 RUNS_PER_TEST = 5
 
@@ -26,6 +26,7 @@ def run_executable(proc, size):
             text=True,
             check=True
         )
+        print(command) # Debug
     except subprocess.CalledProcessError as e:
         print(f"Error executing {EXECUTABLE} with size={size} and processes={proc}")
         print(f"stderr: {e.stderr}")
@@ -49,8 +50,8 @@ def main():
         for proc in PROCESSES:
             for size in SIZE_LIST:
                 print(f"Testing with {proc} processes and grid size {size}")
-                print(f"{'Processes':<12} {'Grid':<10} {'Execution Time (s)':<20}")
-                print(f"{'-'*12} {'-'*10} {'-'*20}")
+                print(f"{'Processes':<10} {'Grid':<10} {'Run':<10} {'Execution Time (s)':<20}")
+                print(f"{'-'*10} {'-'*10} {'-'*10} {'-'*20}")
                 
                 total_time = 0.0
                 for run in range(1, RUNS_PER_TEST + 1):
