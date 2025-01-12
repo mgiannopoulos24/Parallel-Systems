@@ -8,7 +8,8 @@ import seaborn as sns
 
 def plot_results(csv_file):
     """
-    Reads the CSV file and creates a combined scatter plot with grid sizes and process counts.
+    Reads the CSV file and creates a line plot with processes on the x-axis and time on the y-axis.
+    Only includes rows where the 'Run' column contains the word 'Average'.
     """
     # Check if the CSV file exists
     if not os.path.isfile(csv_file):
@@ -22,47 +23,51 @@ def plot_results(csv_file):
         print(f"Error: Could not read the CSV file. {e}")
         sys.exit(1)
     
-    # Set a more distinct style for better visibility
-    sns.set(style="whitegrid")  # Use seaborn's whitegrid style for better readability
+    # Filter the DataFrame to include only rows where 'Run' contains 'Average'
+    df = df[df['Run'].str.contains('Average', na=False)]
     
-    # Convert process counts to string for better labeling
+    # Set a more distinct style for better visibility
+    sns.set(style="whitegrid")
+    
+    # Convert processes to string for labeling
     df['Processes'] = df['Processes'].astype(str)
     
-    # Create a combined plot
-    plt.figure(figsize=(16, 12))
+    # Create a figure
+    plt.figure(figsize=(16, 10))
     
-    # Use a color palette for grid sizes
-    palette = sns.color_palette("Set2", len(df['Grid Size'].unique()))
+    # Use a color palette for generations
+    palette = sns.color_palette("tab10", len(df['Grid Size'].unique()))
     
-    # Scatter plot with different markers for process counts
-    sns.scatterplot(
+    # Plot the data grouped by grid size
+    sns.lineplot(
         data=df,
-        x='Generations',
-        y='Execution Time (s)',
-        hue='Grid Size',  # Color by grid size
-        style='Processes',  # Marker style by process count
-        palette=palette,
-        s=100,  # Marker size
-        alpha=0.7  # Transparency for better clarity
+        x='Processes',
+        y='Average Time (s)',
+        hue='Grid Size',
+        style='Grid Size',  # Style lines by grid size
+        markers=True,  # Add markers to the lines
+        dashes=False,  # Use solid lines
+        palette=palette
     )
     
     # Add title and labels
-    plt.title('Execution Time vs Generations for Game of Life', fontsize=18)
-    plt.xlabel('Generations', fontsize=14)
-    plt.ylabel('Execution Time (seconds)', fontsize=14)
+    plt.title('Average Execution Time vs Processes for Game of Life', fontsize=18)
+    plt.xlabel('Processes', fontsize=14)
+    plt.ylabel('Average Execution Time (seconds)', fontsize=14)
     
     # Configure legend
     plt.legend(
-        title='Grid Sizes / Processes',
+        title='Grid Sizes',
         loc='upper left',
         bbox_to_anchor=(1.05, 1),
         fontsize=12
     )
+    
     plt.grid(True, linestyle=':', color='gray')  # Lighter grid for better clarity
     plt.tight_layout()
     
     # Save the plot as an image
-    plot_filename = 'game_of_life_results_with_processes.png'
+    plot_filename = 'game_of_life_average_results_with_processes_lines.png'
     plt.savefig(plot_filename, dpi=300)  # High resolution for better clarity
     print(f"Plot saved as '{plot_filename}'.")
     plt.show()
