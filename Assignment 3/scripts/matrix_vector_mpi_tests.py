@@ -11,7 +11,7 @@ from pathlib import Path
 EXECUTABLE = Path("../build/matrix_vector_mpi")  
 OUTPUT_CSV = "matrix_vector_mpi_results.csv"
 MACHINES_FILE = Path("../machines")  # Path to the machines file
-PROCESSES = [2, 4]  # Number of processes to test
+PROCESSES = [2, 4, 8]  # Number of processes to test
 SIZE_LIST = [100, 1000, 5000, 10000]  # Grid sizes to test
 RUNS_PER_TEST = 5
 
