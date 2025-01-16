@@ -10,7 +10,7 @@ from pathlib import Path
 GAME_OF_LIFE_EXEC = Path("../build/game_of_life_hybrid")
 MACHINES_FILE = Path("../machines")  # Path to the machines file
 OUTPUT_CSV = "game_of_life_hybrid_results.csv"
-GRIDS = [(64, 64), (1024, 1024), (4096, 4096)]  # Grid sizes
+GRIDS = [(64, 64), (1024, 1024)]  # Grid sizes
 GENERATIONS = 1000
 RUNS_PER_TEST = 5
 PROCESSES = [2, 4, 8, 16]  # Number of processes to test

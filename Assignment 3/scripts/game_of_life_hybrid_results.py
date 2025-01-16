@@ -74,7 +74,7 @@ def plot_results(csv_file):
 
 def main():
     # Specify the CSV file with results
-    csv_file = "game_of_life_recv_hybrid.csv"
+    csv_file = "game_of_life_hybrid_results.csv"
     
     # Call the plotting function
     plot_results(csv_file)
