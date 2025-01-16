@@ -67,14 +67,14 @@ def plot_results(csv_file):
     plt.tight_layout()
     
     # Save the plot as an image
-    plot_filename = 'game_of_life_recv_results.png'
+    plot_filename = 'game_of_life_hybrid_results.png'
     plt.savefig(plot_filename, dpi=300)  # High resolution for better clarity
     print(f"Plot saved as '{plot_filename}'.")
     plt.show()
 
 def main():
     # Specify the CSV file with results
-    csv_file = "game_of_life_recv_results.csv"
+    csv_file = "game_of_life_recv_hybrid.csv"
     
     # Call the plotting function
     plot_results(csv_file)
