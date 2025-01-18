@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage[top=2.5cm, left=3cm, right=3cm, bottom=4.0cm]{geometry}
+\usepackage{graphicx} 
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{array}
+\usepackage{tabularray}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{csquotes}
+\usepackage{alphabeta}
+\usepackage{tabularx}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{esint}
+
+\begin{document}
+\begin{table}[ht]
+    \begin{tblr}{
+        @{}X[l, valign=b]X[c, valign=b]X[r, valign=b]@{}
+    }
+
+    \hline
+    % First line, course info
+    \SetCell[c=2]{l}{[ΘΠ04] Παράλληλα Συστήματα} & & {2024-25} \\ 
+    \hline
+    {} & {} & {} \\
+
+    % Title
+    \SetCell[c=3]{c}{ \Large \textbf{Εργασία 4 - Προγραμματισμός με CUDA} } \\
+    {} & {} & {} \\
+
+    % Name Surname, Student ID
+    \hline
+    \SetCell[c=3]{c}{ \textbf{Ονοματεπώνυμο:} Μάριος Γιαννόπουλος } \\
+    \SetCell[c=3]{c}{ \textbf{A.M.:} 1115200000032} \\
+    \hline
+
+    \end{tblr}
+\end{table}
+\end{document}
