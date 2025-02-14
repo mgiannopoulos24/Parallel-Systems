@@ -47,7 +47,7 @@
     \item \texttt{bodyForceKernel}: Υπολογίζει τις βαρυτικές δυνάμεις που ασκούνται σε κάθε σώμα από όλα τα υπόλοιπα σώματα.
     \item \texttt{integratePositionKernel}: Ενημερώνει τις θέσεις των σωμάτων με βάση τις ταχύτητές τους.
 \end{itemize}
-Οι πυρήνες εκτελούνται παράλληλα στη GPU, με κάθε νήμα να αναλαμβάνει τον υπολογισμό για ένα σώμα. Η διαχείριση της μνήμης γίνεται με τη χρήση των συναρτήσεων \texttt{cudaMalloc} και \texttt{cudaMemcpy}, ενώ η συγχρονισμός των νημάτων εξασφαλίζεται με τη χρήση της \texttt{cudaDeviceSynchronize}.
+Οι πυρήνες εκτελούνται παράλληλα στη GPU, με κάθε νήμα να αναλαμβάνει τον υπολογισμό για ένα σώμα. Η διαχείριση της μνήμης γίνεται με τη χρήση των συναρτήσεων \texttt{cudaMalloc} και \texttt{cudaMemcpy}, ενώ ο συγχρονισμός των νημάτων εξασφαλίζεται με τη χρήση της \texttt{cudaDeviceSynchronize}.
 
 \section{Αποτελέσματα}
 Η επιτάχυνση του προγράμματος ήταν σημαντική. Τα αποτελέσματα για τους δύο βασικούς αριθμούς σωμάτων παρουσιάζονται στον παρακάτω πίνακα:
@@ -57,37 +57,38 @@
 \begin{tabular}{|c|c|c|}
 \hline
 \textbf{Αριθμός Σωμάτων} & \textbf{Χρόνος Εκτέλεσης (s)} & \textbf{Αλληλεπιδράσεις/Δευτερόλεπτο (Billion)} \\
-\begin{verbatim}
-Running nbody simulator with 4096 bodies
-----------------------------------------
-
-Application should run faster than 0.9s
-Your application ran in: 0.1424s
-Your application reports  49.028 Billion Interactions / second
-
-Your results are correct
-
-Running nbody simulator with 65536 bodies
-----------------------------------------
-
-Application should run faster than 1.3s
-Your application ran in: 0.2135s
-Your application reports  416.817 Billion Interactions / second
-
-Your results are correct
-\end{verbatim}
-% \hline
-% 4096 & 0.1424 & 49.028 \\
-% 65536 & 0.2135 & 416.817 \\
-% \hline
+\hline
+4096 & 0.1424 & 49.028 \\
+65536 & 0.2135 & 416.817 \\
+\hline
 \end{tabular}
 \caption{Αποτελέσματα Επιτάχυνσης}
 \end{table}
 
+Και εδώ είναι το output του Python notebook:
+\begin{verbatim}
+    Running nbody simulator with 4096 bodies
+    ----------------------------------------
+    
+    Application should run faster than 0.9s
+    Your application ran in: 0.1424s
+    Your application reports  49.028 Billion Interactions / second
+    
+    Your results are correct
+    
+    Running nbody simulator with 65536 bodies
+    ----------------------------------------
+    
+    Application should run faster than 1.3s
+    Your application ran in: 0.2135s
+    Your application reports  416.817 Billion Interactions / second
+    
+    Your results are correct
+\end{verbatim}
 Όπως φαίνεται, ο χρόνος εκτέλεσης για 4096 σώματα μειώθηκε σε 0.1424 δευτερόλεπτα, ενώ για 65536 σώματα σε 0.2135 δευτερόλεπτα. Αυτό αντιστοιχεί σε 49.028 και 416.817 δισεκατομμύρια αλληλεπιδράσεις ανά δευτερόλεπτο, αντίστοιχα.
 
 \section{Συμπεράσματα}
-Η χρήση της CUDA για την επιτάχυνση του επιλυτή Ν-σωμάτων απέδωσε εξαιρετικά αποτελέσματα. Ο χρόνος εκτέλεσης μειώθηκε σημαντικά, περνώντας τα κριτήρια επιτυχίας της εργασίας. Η παράλληλη επεξεργασία στο GPU αποτελεί μια ισχυρή λύση για προβλήματα μεγάλης υπολογιστικής πολυπλοκότητας, όπως η προσομοίωση Ν-σωμάτων.
+Η χρήση της CUDA για την επιτάχυνση του επιλυτή Ν-σωμάτων απέδωσε εξαιρετικά αποτελέσματα. Ο χρόνος εκτέλεσης μειώθηκε σημαντικά, περνώντας τα κριτήρια επιτυχίας της εργασίας. Η παράλληλη επεξεργασία σε GPU αποτελεί μια ισχυρή λύση για προβλήματα μεγάλης υπολογιστικής πολυπλοκότητας, όπως η προσομοίωση Ν-σωμάτων.
 
 \section{Πηγαίος Κώδικας}
 Ο πηγαίος κώδικας της εφαρμογής βρίσκεται στον φάκελο \texttt{src} του project. Περιλαμβάνει τα αρχεία:
